@@ -9,7 +9,7 @@ The following project consists in building a simple web service for practice the
 #### Entities
 
 1. Two entities **Users** and **Courses**.
-2. The users must contain an identifier (email), a role, a password (must be encrypted) and a unique course id.
+2. The users must contain an identifier (email), a role, a password (must be encrypted) and a optional unique course id.
 3. The roles for the user are _user_ and _admin_
 4. The course must have a name.
 
