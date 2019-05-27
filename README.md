@@ -21,7 +21,7 @@ The following project consists in building a simple web service for practice the
 
 #### Security
 
-1. Users of a any kind must do login before do any request.
+1. Users of a any kind must be logged to do any request.
 2. The service implement JWT (**hint**: middleware validation).
 
 #### Extra
