@@ -1,5 +1,5 @@
 const express = require("express");
-const userServices = require("./user-services");
+const userServices = require("./services/user-services");
 const app = express();
 
 app.use(express.json());
@@ -13,10 +13,10 @@ app.post("/api/users", (req, res) => {
     .addUser(req.body)
     .then(user => {
       if (!user.upsertedCount) {
-        return res.send({});
+        return res.status(400).send({});
       }
 
-      res.send({
+      res.status(200).send({
         _id: user.upsertedId._id,
         ...req.body
       });
@@ -66,7 +66,7 @@ app.delete("/api/users/:id", (req, res) => {
     .deleteUser(req.params.id)
     .then(result => {
       const code = result.deletedCount ? 200 : 400;
-      res.status(code).send();
+      res.status(code).send({});
     })
     .catch(err => {
       res.status(500).send(err);
