@@ -1,0 +1,26 @@
+{
+  "name": "trainee-courses-api",
+  "version": "1.0.0",
+  "description": "Let's go to practice a little!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ksquareincmx/trainee-courses-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ksquareincmx/trainee-courses-api/issues"
+  },
+  "homepage": "https://github.com/ksquareincmx/trainee-courses-api#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "joi-objectid": "^2.0.0",
+    "mongoose": "^5.5.14"
+  }
+}
