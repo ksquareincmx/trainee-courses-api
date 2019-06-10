@@ -1,4 +1,4 @@
-const db = require("../controllers/users-repository");
+const db = require("../repositories/users-repository");
 
 const addUser = user => {
   return db.insertUser(user);
