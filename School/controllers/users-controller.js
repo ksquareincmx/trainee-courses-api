@@ -1,68 +1,73 @@
 const usersServices = require("../services/users-services");
 
-const addUser = (req, res) => {
-  usersServices
-    .addUser(req.body)
-    .then(user => {
-      if (!user.upsertedCount) {
-        return res.status(400).send({});
-      }
+const addUser = async (req, res) => {
+  try {
+    const user = await usersServices.addUser(req.body);
 
-      res.status(200).send({
-        _id: user.upsertedId._id,
-        ...req.body
+    if (!user.upsertedCount) {
+      return res.status(400).send({
+        name: "MongoError",
+        err: "The user already exists"
       });
-    })
-    .catch(err => {
-      res.status(500).send(err);
+    }
+
+    res.send({
+      _id: user.upsertedId._id,
+      ...req.body
     });
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const getAllUsers = (req, res) => {
-  usersServices
-    .getAllUsers()
-    .then(users => {
-      res.send(users);
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+const getAllUsers = async (_req, res) => {
+  try {
+    const allUsers = await usersServices.getAllUsers();
+    res.send(allUsers);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const getUser = (req, res) => {
-  usersServices
-    .getUser(req.params.id)
-    .then(user => {
-      res.send(user);
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+const getUser = async (req, res) => {
+  try {
+    const user = await usersServices.getUser(req.params.id);
+    res.send(user);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const updateUser = (req, res) => {
-  usersServices
-    .updateUser(req.body)
-    .then(user => {
-      const result = user.modifiedCount ? req.body : {};
-      res.send(result);
-    })
-    .catch(err => {
-      res.status(500);
-      res.send(err);
-    });
+const updateUser = async (req, res) => {
+  try {
+    await usersServices.updateUser(req.params.id);
+
+    res.send(req.body);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const deleteUser = (req, res) => {
-  usersServices
-    .deleteUser(req.params.id)
-    .then(result => {
-      const code = result.deletedCount ? 200 : 400;
-      res.status(code).send({});
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+const deleteUser = async (req, res) => {
+  try {
+    const result = await usersServices.deleteUser(req.params.id);
+
+    if (!result.value) {
+      return res.status(400).send({
+        name: "MongoError",
+        err: "Could not find the course to delete"
+      });
+    }
+
+    res.send(result.value);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
 module.exports = {

@@ -1,68 +1,73 @@
 const coursesServices = require("../services/courses-services");
 
-const addCourse = (req, res) => {
-  coursesServices
-    .addCourse(req.body)
-    .then(course => {
-      if (!course.upsertedCount) {
-        return res.status(400).send({});
-      }
+const addCourse = async (req, res) => {
+  try {
+    const course = await coursesServices.addCourse(req.body);
 
-      res.status(200).send({
-        _id: course.upsertedId._id,
-        ...req.body
+    if (!course.upsertedCount) {
+      return res.status(400).send({
+        name: "MongoError",
+        err: "The course already exist"
       });
-    })
-    .catch(err => {
-      res.status(500).send(err);
+    }
+
+    res.send({
+      _id: course.upsertedId._id,
+      ...req.body
     });
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const getAllCourses = (req, res) => {
-  coursesServices
-    .getAllCourses()
-    .then(courses => {
-      res.send(courses);
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+const getAllCourses = async (_req, res) => {
+  try {
+    const allCourses = await coursesServices.getAllCourses();
+    res.send(allCourses);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const getCourse = (req, res) => {
-  coursesServices
-    .getCourse(req.params.id)
-    .then(course => {
-      res.send(course);
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+const getCourse = async (req, res) => {
+  try {
+    const course = await coursesServices.getCourse(req.params.id);
+    res.send(course);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const updateCourse = (req, res) => {
-  coursesServices
-    .updateCourse(req.body)
-    .then(course => {
-      const result = course.modifiedCount ? req.body : {};
-      res.send(result);
-    })
-    .catch(err => {
-      res.status(500);
-      res.send(err);
-    });
+const updateCourse = async (req, res) => {
+  try {
+    await coursesServices.updateCourse(req.body);
+
+    res.send(req.body);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
-const deleteCourse = (req, res) => {
-  coursesServices
-    .deleteCourse(req.params.id)
-    .then(result => {
-      const code = result.deletedCount ? 200 : 400;
-      res.status(code).send({});
-    })
-    .catch(err => {
-      res.status(500).send(err);
-    });
+const deleteCourse = async (req, res) => {
+  try {
+    const result = await coursesServices.deleteCourse(req.params.id);
+
+    if (!result.value) {
+      return res.status(400).send({
+        name: "MongoError",
+        err: "Could not find the course to delete"
+      });
+    }
+
+    res.send(result.value);
+  } catch (e) {
+    const { name, err } = e;
+    res.status(500).send({ name, err });
+  }
 };
 
 module.exports = {

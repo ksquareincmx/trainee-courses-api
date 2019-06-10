@@ -18,7 +18,6 @@ const insertUser = newUser => {
   return new Promise((resolve, reject) => {
     const collection = db.collection(collectionName);
     const { name, email, admin, password, courses } = newUser;
-
     collection.updateOne(
       { email },
       { $set: { name, email, admin, password, courses } },
@@ -92,9 +91,8 @@ const deleteUser = id => {
     const collection = db.collection(collectionName);
     const objId = new Mongo.ObjectID(id);
 
-    collection.deleteOne({ _id: objId }, (err, result) => {
+    collection.findOneAndDelete({ _id: objId }, (err, result) => {
       if (err) {
-        console.log("Could not delete the record");
         return reject(err);
       }
 
