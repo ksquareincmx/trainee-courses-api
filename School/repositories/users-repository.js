@@ -1,7 +1,3 @@
-// We should have differents files for users repositories and courses repositories
-// 'cuz despite the fact they will have similar operations, some could not be
-// the same in operation
-
 const Mongo = require("mongodb");
 const MongoClient = Mongo.MongoClient;
 const url = "mongodb://localhost:27017";
@@ -70,11 +66,11 @@ const findUser = id => {
   });
 };
 
-const updateUser = updatedDocument => {
+const updateUser = updatedUser => {
   return new Promise((resolve, reject) => {
     const collection = db.collection(collectionName);
-    const { name, email, admin, password, courses } = updatedDocument;
-    const objId = new Mongo.ObjectID(updatedDocument._id);
+    const { name, email, admin, password, courses } = updatedUser;
+    const objId = new Mongo.ObjectID(updatedUser._id);
 
     collection.updateOne(
       { _id: objId },
