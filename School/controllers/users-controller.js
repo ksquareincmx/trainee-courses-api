@@ -43,7 +43,7 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    await usersServices.updateUser(req.params.id);
+    await usersServices.updateUser(req.body);
 
     res.send(req.body);
   } catch (e) {
@@ -59,7 +59,7 @@ const deleteUser = async (req, res) => {
     if (!result.value) {
       return res.status(400).send({
         name: "MongoError",
-        err: "Could not find the course to delete"
+        err: "Could not find the user to delete"
       });
     }
 

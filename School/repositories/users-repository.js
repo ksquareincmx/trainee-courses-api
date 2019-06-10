@@ -14,91 +14,76 @@ client.connect(err => {
   db = client.db(dbName);
 });
 
-const insertUser = newUser => {
-  return new Promise((resolve, reject) => {
+const insertUser = async newUser => {
+  try {
     const collection = db.collection(collectionName);
     const { name, email, admin, password, courses } = newUser;
-    collection.updateOne(
+
+    const user = await collection.updateOne(
       { email },
       { $set: { name, email, admin, password, courses } },
-      { upsert: true },
-      (err, res) => {
-        if (err) {
-          console.log("Cannot insert to DB");
-          return reject(err);
-        }
-
-        return resolve(res);
-      }
+      { upsert: true }
     );
-  });
+
+    return Promise.resolve(user);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };
 
-const findAllUsers = () => {
-  return new Promise((resolve, reject) => {
+const findAllUsers = async () => {
+  try {
     const collection = db.collection(collectionName);
 
-    collection.find({}).toArray((err, res) => {
-      if (err) {
-        console.log("Cannot retrieve data from DB");
-        return reject(err);
-      }
+    const allUsers = await collection.find({}).toArray();
 
-      return resolve(res);
-    });
-  });
+    return Promise.resolve(allUsers);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };
 
-const findUser = id => {
-  return new Promise((resolve, reject) => {
+const findUser = async id => {
+  try {
     const collection = db.collection(collectionName);
     const objId = new Mongo.ObjectID(id);
 
-    collection.find({ _id: objId }).toArray((err, res) => {
-      if (err) {
-        console.log("Cannot retrieve data from DB");
-        return reject(err);
-      }
+    const user = await collection.find({ _id: objId }).toArray();
 
-      return resolve(res[0]);
-    });
-  });
+    return Promise.resolve(user);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };
 
-const updateUser = updatedUser => {
-  return new Promise((resolve, reject) => {
+const updateUser = async updatedUser => {
+  try {
     const collection = db.collection(collectionName);
     const { name, email, admin, password, courses } = updatedUser;
     const objId = new Mongo.ObjectID(updatedUser._id);
 
-    collection.updateOne(
+    const user = await collection.updateOne(
       { _id: objId },
-      { $set: { name, email, admin, password, courses } },
-      (err, result) => {
-        if (err) {
-          console.log("Could not update the record");
-          return reject(err);
-        }
-
-        resolve(result);
-      }
+      { $set: { name, email, admin, password, courses } }
     );
-  });
+
+    return Promise.resolve(user);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };
 
-const deleteUser = id => {
-  return new Promise((resolve, reject) => {
+const deleteUser = async id => {
+  try {
     const collection = db.collection(collectionName);
     const objId = new Mongo.ObjectID(id);
 
-    collection.findOneAndDelete({ _id: objId }, (err, result) => {
-      if (err) {
-        return reject(err);
-      }
+    const user = await collection.findOneAndDelete({ _id: objId });
 
-      resolve(result);
-    });
-  });
+    return Promise.resolve(user);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };
 
 module.exports = {
