@@ -11,8 +11,9 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const course = await Course.findById(req.params.id);
 
-  if (!course)
+  if (!course) {
     return res.status(404).send("The course with the given ID was not found");
+  }
 
   res.send(course);
 });
@@ -22,11 +23,14 @@ router.post("/", async (req, res) => {
     ? req.headers.authorization.toLowerCase()
     : null;
 
-  if (role !== "admin")
+  if (role !== "admin") {
     return res.status(403).send("Invalid credentials to create a course");
+  }
 
   const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
 
   let course = new Course({ name: req.body.name });
   course = await course.save();
@@ -38,11 +42,14 @@ router.put("/:id", async (req, res) => {
     ? req.headers.authorization.toLowerCase()
     : null;
 
-  if (role !== "admin")
-    return res.status(403).send("Invalid credentials to create a course");
+  if (role !== "admin") {
+    return res.status(403).send("Invalid credentials to update a course");
+  }
 
   const { error } = validate(req.body);
-  if (error) return res.status(404).send(error.details[0].message);
+  if (error) {
+    return res.status(404).send(error.details[0].message);
+  }
 
   const course = await Course.findByIdAndUpdate(
     req.params.id,
@@ -50,8 +57,9 @@ router.put("/:id", async (req, res) => {
     { new: true }
   );
 
-  if (!course)
+  if (!course) {
     return res.status(404).send("The course with the given ID was not found");
+  }
 
   res.send(course);
 });
@@ -61,13 +69,15 @@ router.delete("/:id", async (req, res) => {
     ? req.headers.authorization.toLowerCase()
     : null;
 
-  if (role !== "admin")
-    return res.status(403).send("Invalid credentials to create a course");
+  if (role !== "admin") {
+    return res.status(403).send("Invalid credentials to delete a course");
+  }
 
   const course = await Course.findByIdAndRemove(req.params.id);
 
-  if (!course)
+  if (!course) {
     return res.status(404).send("The course with the given ID was not found");
+  }
 
   res.send(course);
 });

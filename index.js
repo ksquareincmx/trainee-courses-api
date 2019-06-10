@@ -1,13 +1,11 @@
-//require("dotenv").config();
-
-const Joi = require("joi");
-Joi.objectId = require("joi-objectid")(Joi);
-const express = require("express");
-const app = express();
-const mongoose = require("mongoose");
-mongoose.set("useFindAndModify", false);
-
 const courses = require("./routes/courses");
+const Joi = require("joi");
+const express = require("express");
+const mongoose = require("mongoose");
+
+const app = express();
+Joi.objectId = require("joi-objectid")(Joi);
+mongoose.set("useFindAndModify", false);
 
 const dbString = "mongodb://localhost:27017/coursesAPI";
 
@@ -17,6 +15,8 @@ mongoose
   })
   .then(() => {
     console.log("Connected to MongoDB");
+    const port = process.env.PORT || 5010;
+    app.listen(port, () => console.log(`Listening on port ${port}...`));
     return;
   })
   .catch(err => {
@@ -26,6 +26,3 @@ mongoose
 
 app.use(express.json());
 app.use("/api/courses", courses);
-
-const port = process.env.PORT || 5010;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
