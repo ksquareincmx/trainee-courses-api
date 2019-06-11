@@ -1,4 +1,4 @@
-validateRole = function(req, res, next) {
+const validateRole = function(req, res, next) {
   const role = req.headers.authorization
     ? req.headers.authorization.toLowerCase()
     : null;
