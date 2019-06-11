@@ -10,6 +10,5 @@ validateRole = function(req, res, next) {
 };
 
 module.exports = {
-  validate,
   validateRole
 };
