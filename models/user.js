@@ -13,37 +13,56 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
     minlength: 5,
     maxlength: 255
   },
   role: {
     type: String,
     required: true,
-    minlength: 5,
+    enum: ["user", "admin"],
+    minlength: 3,
     maxlength: 255
   },
   password: {
     type: String,
     required: true,
     minlength: 5,
-    maxlength: 255
+    maxlength: 1024
   },
   courses: [courseSchema]
 });
 
-const Course = mongoose.model("Course", userSchema);
+const User = mongoose.model("User", userSchema);
 
-function validateCourse(course) {
+function validateUser(user) {
+  const courses = Joi.object().keys({
+    courseId: Joi.objectId().required()
+  });
   const schema = {
     name: Joi.string()
       .min(5)
       .max(255)
+      .required(),
+    email: Joi.string()
+      .min(5)
+      .max(255)
       .required()
+      .email(),
+    role: Joi.string()
+      .min(3)
+      .max(255)
+      .required(),
+    password: Joi.string()
+      .min(5)
+      .max(1024)
+      .required(),
+    courses: Joi.array().items(courses)
   };
 
-  return Joi.validate(course, schema);
+  return Joi.validate(user, schema);
 }
 
-exports.Course = Course;
-exports.validate = validateCourse;
+exports.User = User;
+exports.validate = validateUser;
 exports.userSchema = userSchema;
