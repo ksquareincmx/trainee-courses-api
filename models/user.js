@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const { courseSchema } = require("./course");
+const { Course, courseSchema } = require("./course");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -63,6 +63,31 @@ function validateUser(user) {
   return Joi.validate(user, schema);
 }
 
+async function validateUserCourses(courses) {
+  if (!courses) {
+    return [];
+  }
+
+  let coursesPromises = courses.map(async element => {
+    const course = await Course.findById(element.courseId);
+    if (!course) {
+      let error = {};
+      error.details = [];
+      error.details.push({ message: "Invalid course" });
+      throw error;
+    }
+    const saveCourse = {
+      _id: course._id,
+      name: course.name
+    };
+    return saveCourse;
+  });
+
+  courses = await Promise.all(coursesPromises);
+  return courses;
+}
+
 exports.User = User;
 exports.validate = validateUser;
 exports.userSchema = userSchema;
+exports.validateUserCourses = validateUserCourses;

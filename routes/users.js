@@ -1,6 +1,5 @@
 const { validateRole } = require("../middleware/validator");
-const { User, validate } = require("../models/user");
-const { Course } = require("../models/course");
+const { User, validate, validateUserCourses } = require("../models/user");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const express = require("express");
@@ -45,24 +44,11 @@ router.post("/", validateRole, async (req, res) => {
     }
 
     //validate courses
-    let coursesPromises = newUser.courses.map(async element => {
-      const course = await Course.findById(element.courseId);
-      if (!course) {
-        let error = {};
-        error.details = [];
-        error.details.push({ message: "Invalid course" });
-        errors.push(error);
-        return;
-      }
-      const saveCourse = {
-        _id: course._id,
-        name: course.name
-      };
-      return saveCourse;
-    });
-
-    courses = await Promise.all(coursesPromises);
-    console.log("courses", courses);
+    try {
+      courses = await validateUserCourses(newUser.courses);
+    } catch (error) {
+      errors.push(error);
+    }
 
     const { name, role, email, password } = newUser;
     user = await new User({
@@ -88,13 +74,21 @@ router.post("/", validateRole, async (req, res) => {
 });
 
 router.put("/:id", validateRole, async (req, res) => {
+  let saveCourses = [];
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
   const { name, role, email, password, courses } = req.body;
+
+  try {
+    saveCourses = await validateUserCourses(courses);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+
   const user = await User.findByIdAndUpdate(
     req.params.id,
-    { name, role, email, password, courses },
+    { name, role, email, password, courses: saveCourses },
     { new: true }
   );
 
