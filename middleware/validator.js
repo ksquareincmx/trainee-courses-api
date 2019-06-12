@@ -1,7 +1,5 @@
 const validateRole = function(req, res, next) {
-  const role = req.headers.authorization
-    ? req.headers.authorization.toLowerCase()
-    : null;
+  const role = req.user.role;
 
   if (role !== "admin") {
     return res

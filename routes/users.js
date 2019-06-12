@@ -1,4 +1,5 @@
 const { validateRole } = require("../middleware/validator");
+const auth = require("../middleware/auth");
 const { User, validate } = require("../models/user");
 const { validateIfExist: validateUserCourses } = require("../models/course");
 const _ = require("lodash");

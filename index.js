@@ -1,6 +1,7 @@
 const courses = require("./routes/courses");
 const users = require("./routes/users");
 const auth = require("./routes/auth");
+const authToken = require("./middleware/auth");
 const Joi = require("joi");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -30,5 +31,5 @@ mongoose
 
 app.use(express.json());
 app.use("/api/auth", auth);
-app.use("/api/courses", courses);
-app.use("/api/users", users);
+app.use("/api/courses", authToken, courses);
+app.use("/api/users", authToken, users);
