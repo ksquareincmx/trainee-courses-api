@@ -1,5 +1,6 @@
 const { validateRole } = require("../middleware/validator");
-const { User, validate, validateUserCourses } = require("../models/user");
+const { User, validate } = require("../models/user");
+const { validateIfExist: validateUserCourses } = require("../models/course");
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const express = require("express");
@@ -21,16 +22,16 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", validateRole, async (req, res) => {
-  const multipleUsers = req.body.length;
   let users = [];
   let errors = [];
   let courses = [];
+  const multipleUsers = req.body.length;
   multipleUsers ? (users = req.body) : users.push(req.body);
 
   let promises = _.map(users, async newUser => {
     const { error } = validate(newUser);
     if (error) {
-      console.log("error 1");
+      console.log("Error on user format");
       errors.push(error);
       return;
     }
