@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
@@ -33,6 +34,14 @@ const userSchema = new mongoose.Schema({
   courses: [courseSchema]
 });
 
+userSchema.methods.generateAuthToken = function() {
+  const token = jwt.sign(
+    { _id: this._id, isAdmin: this.isAdmin },
+    process.env.PrivateKey
+  );
+  return token;
+};
+
 const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
@@ -62,30 +71,6 @@ function validateUser(user) {
 
   return Joi.validate(user, schema);
 }
-
-// async function validateUserCourses(courses) {
-//   if (!courses) {
-//     return [];
-//   }
-
-//   let coursesPromises = courses.map(async element => {
-//     const course = await Course.findById(element.courseId);
-//     if (!course) {
-//       let error = {};
-//       error.details = [];
-//       error.details.push({ message: "Invalid course" });
-//       throw error;
-//     }
-//     const saveCourse = {
-//       _id: course._id,
-//       name: course.name
-//     };
-//     return saveCourse;
-//   });
-
-//   courses = await Promise.all(coursesPromises);
-//   return courses;
-// }
 
 exports.User = User;
 exports.validate = validateUser;

@@ -1,8 +1,10 @@
 const courses = require("./routes/courses");
 const users = require("./routes/users");
+const auth = require("./routes/auth");
 const Joi = require("joi");
 const express = require("express");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
 Joi.objectId = require("joi-objectid")(Joi);
@@ -27,5 +29,6 @@ mongoose
   });
 
 app.use(express.json());
+app.use("/api/auth", auth);
 app.use("/api/courses", courses);
 app.use("/api/users", users);
