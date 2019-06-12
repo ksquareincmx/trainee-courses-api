@@ -23,6 +23,31 @@ function validateCourse(course) {
   return Joi.validate(course, schema);
 }
 
+async function validateIfExist(courses) {
+  if (!courses) {
+    return [];
+  }
+
+  let coursesPromises = courses.map(async element => {
+    const course = await Course.findById(element.courseId);
+    if (!course) {
+      let error = {};
+      error.details = [];
+      error.details.push({ message: "Invalid course" });
+      throw error;
+    }
+    const saveCourse = {
+      _id: course._id,
+      name: course.name
+    };
+    return saveCourse;
+  });
+
+  courses = await Promise.all(coursesPromises);
+  return courses;
+}
+
 exports.Course = Course;
 exports.validate = validateCourse;
 exports.courseSchema = courseSchema;
+exports.validateIfExist = validateIfExist;

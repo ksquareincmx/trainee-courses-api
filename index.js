@@ -1,28 +1,7 @@
-const courses = require("./routes/courses");
-const Joi = require("joi");
 const express = require("express");
-const mongoose = require("mongoose");
-
 const app = express();
-Joi.objectId = require("joi-objectid")(Joi);
-mongoose.set("useFindAndModify", false);
 
-const dbString = "mongodb://localhost:27017/coursesAPI";
-
-mongoose
-  .connect(dbString, {
-    useNewUrlParser: true
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-    const port = process.env.PORT || 5010;
-    app.listen(port, () => console.log(`Listening on port ${port}...`));
-    return;
-  })
-  .catch(err => {
-    console.error("Could not connect to MongoDB...", err);
-    throw err;
-  });
-
-app.use(express.json());
-app.use("/api/courses", courses);
+require("dotenv").config();
+require("./startup/routes")(app);
+require("./startup/db")(app);
+require("./startup/validation")();
