@@ -1,5 +1,4 @@
 const { validateRole } = require("../middleware/validator");
-const auth = require("../middleware/auth");
 const { User, validate } = require("../models/user");
 const { validateIfExist: validateUserCourses } = require("../models/course");
 const _ = require("lodash");
@@ -10,6 +9,16 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   const users = await User.find().sort("name");
   res.send(users);
+});
+
+router.get("/:id/courses", async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return res.status(404).send("The user with the given ID was not found");
+  }
+
+  res.send(user.courses);
 });
 
 router.get("/:id", async (req, res) => {
