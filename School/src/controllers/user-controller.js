@@ -7,7 +7,7 @@ const addUser = async (req, res) => {
     await user.addUser();
     res.status(201).send({ user });
   } catch (error) {
-    res.status(500).send({ error, message: "Could not insert user on DB" });
+    res.status(500).send({ error, message: "Could not add the new user" });
   }
 };
 
@@ -16,9 +16,7 @@ const getAllUsers = async (_req, res) => {
     const allUsers = await User.getAllUsers();
     res.send(allUsers);
   } catch (error) {
-    res
-      .status(500)
-      .send({ error, message: "Could not retrieve users from DB" });
+    res.status(500).send({ error, message: "Could not retrieve users" });
   }
 };
 

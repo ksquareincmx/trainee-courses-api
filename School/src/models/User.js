@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const course = require("../models/Course");
+const { courseSchema } = require("../models/Course");
 
 const userSchema = mongoose.Schema({
   name: {
@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema({
     required: true,
     default: false
   },
-  courses: [course],
+  courses: [courseSchema],
   tokens: [
     {
       token: {

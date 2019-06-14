@@ -1,72 +1,49 @@
-const coursesServices = require("../services/courses-services");
+const { Course } = require("../models/Course");
 
 const addCourse = async (req, res) => {
   try {
-    const course = await coursesServices.addCourse(req.body);
-
-    if (!course.upsertedCount) {
-      return res.status(400).send({
-        name: "MongoError",
-        err: "The course already exist"
-      });
-    }
-
-    res.send({
-      _id: course.upsertedId._id,
-      ...req.body
-    });
-  } catch (e) {
-    const { name, err } = e;
-    res.status(500).send({ name, err });
+    const course = new Course(req.body);
+    await course.addCourse();
+    res.status(201).send({ course });
+  } catch (error) {
+    res.status(500).send({ error, message: "Could not insert the new course" });
   }
 };
 
 const getAllCourses = async (_req, res) => {
   try {
-    const allCourses = await coursesServices.getAllCourses();
+    const allCourses = await Course.getAllCourses();
     res.send(allCourses);
-  } catch (e) {
-    const { name, err } = e;
-    res.status(500).send({ name, err });
+  } catch (error) {
+    res.status(500).send({ error, message: "Could not retrieve courses" });
   }
 };
 
 const getCourse = async (req, res) => {
   try {
-    const course = await coursesServices.getCourse(req.params.id);
+    const course = await Course.getCourse(req.params.id);
     res.send(course);
-  } catch (e) {
-    const { name, err } = e;
-    res.status(500).send({ name, err });
+  } catch (error) {
+    res.status(500).send({ error, message: "Could not get the course" });
   }
 };
 
 const updateCourse = async (req, res) => {
   try {
-    await coursesServices.updateCourse(req.body);
-
-    res.send(req.body);
-  } catch (e) {
-    const { name, err } = e;
-    res.status(500).send({ name, err });
+    const course = new Course(req.body);
+    course.updateCourse();
+    res.send(course);
+  } catch (error) {
+    res.status(500).send({ error, message: "Could not update the course" });
   }
 };
 
 const deleteCourse = async (req, res) => {
   try {
-    const result = await coursesServices.deleteCourse(req.params.id);
-
-    if (!result.value) {
-      return res.status(400).send({
-        name: "MongoError",
-        err: "Could not find the course to delete"
-      });
-    }
-
-    res.send(result.value);
-  } catch (e) {
-    const { name, err } = e;
-    res.status(500).send({ name, err });
+    const result = await Course.deleteCourse(req.params.id);
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ error, message: "Could not delete the course" });
   }
 };
 
